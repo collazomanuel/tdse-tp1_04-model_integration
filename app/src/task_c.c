@@ -47,20 +47,28 @@
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
+#include "task_c_fsm.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_C_CNT_INI			0u
-#define G_TICK_CNT_INI				0u
+#define G_TASK_C_CNT_INI	0u
+
+#define TASK_C_DEL_INI		0u
+#define TASK_C_DEL_MAX		50u
 
 /********************** internal data declaration ****************************/
+s_task_c_t state_task_c;
+e_task_c_t event_task_c;
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_c 		= "Task C - Update By Time Code";
+const char *p_task_c 		= "Task C (Sensor Modeling)";
 
 /********************** external data declaration *****************************/
 uint32_t g_task_c_cnt;
+
+e_task_c_t g_event_task_c;
+bool g_b_event_task_c;
 
 /********************** external functions definition ************************/
 void task_c_init(void *parameters)
@@ -69,54 +77,73 @@ void task_c_init(void *parameters)
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_c_init), p_task_c);
 
 	g_task_c_cnt = G_TASK_C_CNT_INI;
-	g_tick_cnt = G_TICK_CNT_INI;
 
 	/* Print out: Task execution counter */
 	LOGGER_LOG("   %s = %d\r\n", GET_NAME(g_task_c_cnt), (int)g_task_c_cnt);
+
+	state_task_c = STATE_TASK_C_0;
+	event_task_c = EVENT_TASK_C_0;
+	g_b_event_task_c = false;
+
+	/* Print out: Task execution FSM */
+	LOGGER_LOG("   %s = %d\r\n", GET_NAME(state_task_c), (int)state_task_c);
+	LOGGER_LOG("   %s = %d\r\n", GET_NAME(event_task_c), (int)event_task_c);
 }
 
 void task_c_update(void *parameters)
 {
-	bool b_time_update_required = false;
-
 	/* Update Task C Counter */
 	g_task_c_cnt++;
 
-	/* Print out: Application Update */
-	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_c_update), p_task_c);
+	static uint32_t then_task_c = TASK_C_DEL_INI;
+	static uint32_t now_task_c  = TASK_C_DEL_INI;
 
-	/* Print out: Task Updated and execution counter */
-	LOGGER_LOG("   %s = %d\r\n", GET_NAME(g_task_c_cnt), (int)g_task_c_cnt);
+	now_task_c = HAL_GetTick();
+	if ((now_task_c - then_task_c) >= TASK_C_DEL_MAX)
+	{
+		/* Reset then = now */
+		then_task_c = now_task_c;
+	}
 
-	/* Protect shared resource (g_tick_cnt) */
-	__asm("CPSID i");	/* disable interrupts*/
-    if (0 < g_tick_cnt)
-    {
-    	g_tick_cnt--;
-    	b_time_update_required = true;
-    }
-    __asm("CPSIE i");	/* enable interrupts*/
+	if (true == g_b_event_task_c)
+	{
+		g_b_event_task_c = false;
+		event_task_c =	g_event_task_c;
 
-    while (b_time_update_required)
-    {
-		/* Here run code that needs update by time */
-    	/*
-    	 * For example, update Software Timers
-    	 *
-    	 */
-
-		/* Protect shared resource (tick_cnt) */
-		__asm("CPSID i");	/* disable interrupts*/
-		if (0 < g_tick_cnt)
+		switch (state_task_c)
 		{
-			g_tick_cnt--;
-			b_time_update_required = true;
+			case STATE_TASK_C_0:
+
+				if (EVENT_TASK_C_1 == event_task_c)
+					state_task_c =STATE_TASK_C_1;
+
+				if (EVENT_TASK_C_2 == event_task_c)
+						state_task_c =STATE_TASK_C_2;
+
+				break;
+
+			case STATE_TASK_C_1:
+
+				if (EVENT_TASK_C_0 == event_task_c)
+					state_task_c =STATE_TASK_C_0;
+
+				if (EVENT_TASK_C_2 == event_task_c)
+						state_task_c =STATE_TASK_C_2;
+
+				break;
+
+			case STATE_TASK_C_2:
+
+				if (EVENT_TASK_C_0 == event_task_c)
+					state_task_c =STATE_TASK_C_0;
+
+				if (EVENT_TASK_C_1 == event_task_c)
+					state_task_c =STATE_TASK_C_1;
+
+			default:
+
+				break;
 		}
-		else
-		{
-			b_time_update_required = false;
-		}
-		__asm("CPSIE i");	/* enable interrupts*/
 	}
 }
 

@@ -1,4 +1,4 @@
-Example: tdse-tp0_05-hw_sw_test
+Example: tdse-tp1_01-system_modeling
 
  Description:
  Bare Metal - Event-Triggered Systems (ETS)
@@ -12,15 +12,15 @@ Example: tdse-tp0_05-hw_sw_test
    Endless loops, which execute tasks with fixed computing time. This 
    sequential execution is only deviated from when an interrupt event occurs.
 
-  task_a.c (task_a.h) 
-   Blocking Code
+  task_a.c (task_a.h, task_a_fsm.h) 
+   Non-Blocking Code -> System Modeling -> Excitation for Actuator Modeling
 
-  task_b.c (task_b.h)
-   Non-Blocking Code
+  task_b.c (task_b.h, task_b_fsm.h) 
+   Non-Blocking Code -> Actuator Modeling
 
-  task_c.c (task_c.h)
-   Update by Time Code
-
+  task_c.c (task_c.h, task_c_fsm.h) 
+   Non-Blocking Code -> Sensor Model-> Excitation for System Model
+   
   logger.h (logger.c)
    Utilities for Retarget "printf" to Console
 

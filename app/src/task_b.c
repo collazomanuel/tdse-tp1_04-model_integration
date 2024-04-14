@@ -47,25 +47,28 @@
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
+#include "task_b_fsm.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_B_CNT_INI	0u
 
-#define TASK_B_CNT_INI		0u
-#define TASK_B_CNT_MAX		50u
-
 #define TASK_B_DEL_INI		0u
-#define TASK_B_DEL_MAX		500u
+#define TASK_B_DEL_MAX		50u
 
 /********************** internal data declaration ****************************/
+s_task_b_t state_task_b;
+e_task_b_t event_task_b;
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_b 		= "Task B - Non-Blocking Code";
+const char *p_task_b 		= "Task B (Sensor Modeling)";
 
 /********************** external data declaration *****************************/
 uint32_t g_task_b_cnt;
+
+e_task_b_t g_event_task_b;
+bool g_b_event_task_b;
 
 /********************** external functions definition ************************/
 void task_b_init(void *parameters)
@@ -77,89 +80,72 @@ void task_b_init(void *parameters)
 
 	/* Print out: Task execution counter */
 	LOGGER_LOG("   %s = %d\r\n", GET_NAME(g_task_b_cnt), (int)g_task_b_cnt);
+
+	state_task_b = STATE_TASK_B_0;
+	event_task_b = EVENT_TASK_B_0;
+	g_event_task_b = event_task_b;
+	g_b_event_task_b = false;
+
+	/* Print out: Task execution FSM */
+	LOGGER_LOG("   %s = %d\r\n", GET_NAME(state_task_b), (int)state_task_b);
+	LOGGER_LOG("   %s = %d\r\n", GET_NAME(event_task_b), (int)event_task_b);
 }
 
 void task_b_update(void *parameters)
 {
-	/* Memory Layout of C Programs (https://www.geeksforgeeks.org/) */
-	/* Storage Classes in C (https://www.geeksforgeeks.org/) */
-	/* C Variables (https://www.geeksforgeeks.org/) */
-	/* Static Variables in C (https://www.geeksforgeeks.org/) */
-	/* Initialization of static variables in C
-	 * (https://www.geeksforgeeks.org/) */
-	/* Internal static variable vs. External static variable with Examples in C
-	 * (https://www.geeksforgeeks.org/) */
-	/*
-	 * Static variables have the property of preserving their value even after
-	 * they are out of their scope!
-	 * Hence, a static variable preserves its previous value in its previous
-	 * scope and is not initialized again in the new scope.
-	 */
-	#if (TEST_X == TEST_0)
-
-	static uint32_t task_b_cnt = TASK_B_CNT_INI;
-
-	#endif
-
-	#if (TEST_X == TEST_1)
-
-	static uint32_t then = TASK_B_DEL_INI;
-	static uint32_t now = TASK_B_DEL_INI;
-
-	#endif
-
-	#if (TEST_X == TEST_2)
-
-	/* Here Chatbot Artificial Intelligence generated code */
-
-	#endif
-
 	/* Update Task B Counter */
 	g_task_b_cnt++;
 
-	/* Print out: Application Update */
-	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_b_update), p_task_b);
+	static uint32_t then_task_b = TASK_B_DEL_INI;
+	static uint32_t now_task_b  = TASK_B_DEL_INI;
 
-	/* Print out: Task Updated and execution counter */
-	LOGGER_LOG("   %s = %d\r\n", GET_NAME(g_task_b_cnt), (int)g_task_b_cnt);
-
-	/* Blocking and Non-Blocking in Node.js (https://www.geeksforgeeks.org/) */
-	/*
-	 * Non-Blocking: It refers to the program that does not block the
-	 * execution of further operations.
-	 * Non-Blocking methods are executed asynchronously.
-	 * Asynchronously means that the program may not necessarily execute line
-	 * by line.
-	 * The program calls the function and move to the next operation and does
-	 * not wait for it to return.
-	 */
-	#if (TEST_X == TEST_0)
-
-	if (task_b_cnt < TASK_B_CNT_MAX)
-		task_b_cnt++;
-	else
-		task_b_cnt = TASK_B_CNT_INI;
-
-	#endif
-
-	#if (TEST_X == TEST_1)
-
-	/* Check the current tick */
-	now = HAL_GetTick();
-	if ((now - then) >= TASK_B_DEL_MAX)
+	now_task_b = HAL_GetTick();
+	if ((now_task_b - then_task_b) >= TASK_B_DEL_MAX)
 	{
-		/* Only if the current tick is TASK_B_DEL_MAX mS after the last */
 		/* Reset then = now */
-		then = now;
+		then_task_b = now_task_b;
 	}
 
-	#endif
+	if (true == g_b_event_task_b)
+	{
+		g_b_event_task_b = false;
+		event_task_b =	g_event_task_b;
 
-	#if (TEST_X == TEST_2)
+		switch (state_task_b)
+		{
+			case STATE_TASK_B_0:
 
-	/* Here Chatbot Artificial Intelligence generated code */
+				if (EVENT_TASK_B_1 == event_task_b)
+					state_task_b =STATE_TASK_B_1;
 
-	#endif
+				if (EVENT_TASK_B_2 == event_task_b)
+						state_task_b =STATE_TASK_B_2;
+
+				break;
+
+			case STATE_TASK_B_1:
+
+				if (EVENT_TASK_B_0 == event_task_b)
+					state_task_b =STATE_TASK_B_0;
+
+				if (EVENT_TASK_B_2 == event_task_b)
+						state_task_b =STATE_TASK_B_2;
+
+				break;
+
+			case STATE_TASK_B_2:
+
+				if (EVENT_TASK_B_0 == event_task_b)
+					state_task_b =STATE_TASK_B_0;
+
+				if (EVENT_TASK_B_1 == event_task_b)
+					state_task_b =STATE_TASK_B_1;
+
+			default:
+
+				break;
+		}
+	}
 }
 
 /********************** end of file ******************************************/

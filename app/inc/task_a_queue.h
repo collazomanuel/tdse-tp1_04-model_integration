@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_a.h
+ * @file   : task_a_queue.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_B_H_
-#define TASK_INC_TASK_B_H_
+#ifndef TASK_INC_TASK_A_QUEUE_H_
+#define TASK_INC_TASK_A_QUEUE_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -50,17 +50,18 @@ extern "C" {
 /********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
-extern uint32_t g_task_b_cnt;
 
 /********************** external functions declaration ***********************/
-void task_b_init(void *parameters);
-void task_b_update(void *parameters);
+extern void init_queue_event_task_a(void);
+extern void put_event_task_a(e_task_a_t event);
+extern e_task_a_t get_event_task_a(void);
+extern bool any_event_task_a(void);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TASK_INC_TASK_B_H_ */
+#endif /* TASK_INC_TASK_A_QUEUE_H_ */
 
 /********************** end of file ******************************************/

@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_a.h
+ * @file   : task_b_fsm.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_B_H_
-#define TASK_INC_TASK_B_H_
+#ifndef TASK_INC_TASK_B_FSM_H_
+#define TASK_INC_TASK_B_FSM_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -48,19 +48,23 @@ extern "C" {
 /********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
+/* Events to excite Task B */
+typedef enum e_task_b {EVENT_TASK_B_0, EVENT_TASK_B_1, EVENT_TASK_B_2} e_task_b_t;
+
+/* State of Task B */
+typedef enum s_task_b {STATE_TASK_B_0, STATE_TASK_B_1, STATE_TASK_B_2} s_task_b_t;
 
 /********************** external data declaration ****************************/
-extern uint32_t g_task_b_cnt;
+extern e_task_b_t g_event_task_b;
+extern bool g_b_event_task_b;
 
 /********************** external functions declaration ***********************/
-void task_b_init(void *parameters);
-void task_b_update(void *parameters);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TASK_INC_TASK_B_H_ */
+#endif /* TASK_INC_TASK_B_FSM_H_ */
 
 /********************** end of file ******************************************/
